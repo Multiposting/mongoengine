@@ -33,7 +33,7 @@ class DeReference(object):
         self.max_depth = max_depth
 
         doc_type = None
-        if instance and instance._fields:
+        if instance is not None and instance._fields:
             doc_type = instance._fields[name]
             if hasattr(doc_type, 'field'):
                 doc_type = doc_type.field
@@ -155,7 +155,7 @@ class DeReference(object):
             if isinstance(items, (BaseDict, BaseList)):
                 return items
 
-            if instance:
+            if instance is not None:
                 if isinstance(items, dict):
                     return BaseDict(items, instance, name)
                 else:
@@ -203,7 +203,7 @@ class DeReference(object):
             elif hasattr(v, 'id'):
                 data[k] = self.object_map.get(v.id, v)
 
-        if instance and name:
+        if instance is not None and name:
             if is_list:
                 return BaseList(data, instance, name)
             return BaseDict(data, instance, name)
