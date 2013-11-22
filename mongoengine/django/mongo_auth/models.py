@@ -105,3 +105,14 @@ class MongoUser(models.Model):
     """
 
     objects = MongoUserManager()
+
+    def set_password(self, raw_password):
+        """No-op set_password function.
+
+        Django 1.6 introduced a call to `UserModel().set_password(password)`
+        in `ModelBackend.authenticate` to prevent timing attacks.
+        A call to a hashing function is therefore needed.
+
+        """
+
+        get_user_document()().set_password(raw_password)
