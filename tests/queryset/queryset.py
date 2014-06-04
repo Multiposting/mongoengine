@@ -17,7 +17,7 @@ from mongoengine import *
 from mongoengine.connection import get_connection
 from mongoengine.python_support import PY3
 from mongoengine.context_managers import query_counter
-from mongoengine.queryset import (QuerySet, QuerySetManager,
+from mongoengine.queryset import (QuerySet, QuerySetNoCache, QuerySetManager,
                                   MultipleObjectsReturned, DoesNotExist,
                                   queryset_manager)
 from mongoengine.errors import InvalidQueryError
@@ -46,7 +46,7 @@ class QuerySetTest(unittest.TestCase):
     def test_initialisation(self):
         """Ensure that a QuerySet is correctly initialised by QuerySetManager.
         """
-        self.assertTrue(isinstance(self.Person.objects, QuerySet))
+        self.assertTrue(isinstance(self.Person.objects, QuerySetNoCache))
         self.assertEqual(self.Person.objects._collection.name,
                          self.Person._get_collection_name())
         self.assertTrue(isinstance(self.Person.objects._collection,
@@ -857,7 +857,7 @@ class QuerySetTest(unittest.TestCase):
         for i in xrange(1000):
             Doc(number=i).save()
 
-        docs = Doc.objects.order_by('number')
+        docs = Doc.objects.cache().order_by('number')
 
         self.assertEqual(docs.count(), 1000)
 
@@ -3582,7 +3582,7 @@ class QuerySetTest(unittest.TestCase):
 
         with query_counter() as q:
             self.assertEqual(q, 0)
-            people = Person.objects
+            people = Person.objects.cache()
 
             [x for x in people]
             self.assertEqual(100, len(people._result_cache))
@@ -3606,7 +3606,7 @@ class QuerySetTest(unittest.TestCase):
 
         with query_counter() as q:
             self.assertEqual(q, 0)
-            people = Person.objects.no_cache()
+            people = Person.objects
 
             [x for x in people]
             self.assertEqual(q, 1)
@@ -3630,7 +3630,7 @@ class QuerySetTest(unittest.TestCase):
         User(name="Alice").save()
         User(name="Bob").save()
 
-        users = User.objects.all().order_by('name')
+        users = User.objects.cache().all().order_by('name')
         self.assertEqual("%s" % users, "[<User: Alice>, <User: Bob>]")
         self.assertEqual(2, len(users._result_cache))
 
@@ -3651,7 +3651,7 @@ class QuerySetTest(unittest.TestCase):
                 noddy.fields["key"+str(j)] = "value "+str(j)
             noddy.save()
 
-        docs = Noddy.objects.no_cache()
+        docs = Noddy.objects
 
         counter = len([1 for i in docs])
         self.assertEqual(counter, 100)
@@ -3681,7 +3681,7 @@ class QuerySetTest(unittest.TestCase):
         for name in names:
             User(name=name).save()
 
-        users = User.objects.all().order_by('name')
+        users = User.objects.cache().all().order_by('name')
         outer_count = 0
         inner_count = 0
         inner_total_count = 0

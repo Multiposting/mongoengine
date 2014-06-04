@@ -1,5 +1,5 @@
 from functools import partial
-from mongoengine.queryset.queryset import QuerySet
+from mongoengine.queryset.queryset import QuerySetNoCache
 
 __all__ = ('queryset_manager', 'QuerySetManager')
 
@@ -18,7 +18,7 @@ class QuerySetManager(object):
     """
 
     get_queryset = None
-    default = QuerySet
+    default = QuerySetNoCache
 
     def __init__(self, queryset_func=None):
         if queryset_func:

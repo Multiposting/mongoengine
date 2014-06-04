@@ -3,7 +3,7 @@ from bson import DBRef, SON
 from base import (BaseDict, BaseList, TopLevelDocumentMetaclass, get_document)
 from fields import (ReferenceField, ListField, DictField, MapField)
 from connection import get_db
-from queryset import QuerySet
+from queryset.base import BaseQuerySet
 from document import Document, EmbeddedDocument
 
 
@@ -27,7 +27,7 @@ class DeReference(object):
 
         # cheapest way to convert a queryset to a list
         # list(queryset) uses a count() query to determine length
-        if isinstance(items, QuerySet):
+        if isinstance(items, BaseQuerySet):
             items = [i for i in items]
 
         self.max_depth = max_depth
