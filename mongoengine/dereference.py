@@ -73,7 +73,7 @@ class DeReference(object):
         :param depth: The current depth of recursion
         """
         reference_map = {}
-        if not items or depth >= self.max_depth:
+        if (isinstance(items, BaseQuerySet) and items.count() == 0) or not items or depth >= self.max_depth:
             return reference_map
 
         # Determine the iterator to use
