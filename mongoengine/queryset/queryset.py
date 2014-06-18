@@ -155,3 +155,6 @@ class QuerySetNoCache(BaseQuerySet):
             queryset = self.clone()
         queryset.rewind()
         return queryset
+
+    def __nonzero__(self):
+        raise Exception('QuerySetNoCache has no truth value.')
