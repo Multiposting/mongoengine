@@ -302,6 +302,9 @@ class BaseQuerySet(object):
         signals.pre_bulk_insert.send(self._document, documents=docs)
         try:
             ids = self._collection.insert(raw, **write_concern)
+        except pymongo.errors.DuplicateKeyError, err:
+            message = 'Could not save document (%s)'
+            raise NotUniqueError(message % unicode(err))
         except pymongo.errors.OperationFailure, err:
             message = 'Could not save document (%s)'
             if re.match('^E1100[01] duplicate key', unicode(err)):
@@ -440,6 +443,8 @@ class BaseQuerySet(object):
                 return result
             elif result:
                 return result['n']
+        except pymongo.errors.DuplicateKeyError, err:
+            raise NotUniqueError(u'Update failed (%s)' % unicode(err))
         except pymongo.errors.OperationFailure, err:
             if unicode(err) == u'multi not coded yet':
                 message = u'update() method requires MongoDB 1.1.3+'
